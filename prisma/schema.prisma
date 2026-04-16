@@ -1,0 +1,283 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -------------------------
+// Enums
+// -------------------------
+
+enum PlanType {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum TransactionType {
+  EXPENSE
+  INCOME
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+  ENDED
+  ABANDONED
+  INCOMPLETE
+  UPCOMING
+}
+
+enum RecurringInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum AccountType {
+  CURRENT
+  SAVING
+}
+
+enum PaymentStatus {
+  PAID
+  FAILED
+  PENDING
+}
+
+enum PaymentType {
+  CHECKOUT
+  RECURRING
+}
+
+enum ImportJobStatus {
+  SCANNED
+  SAVED
+  FAILED
+}
+
+// -------------------------
+// Models
+// -------------------------
+
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String   @unique
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  budgets                       Budget[]
+  accounts                      Account[]
+  transactions                  Transaction[]
+  usage                         Usage?
+  subscription                  Subscription?
+  payments                      Payment[]
+  subscriptionItems             SubscriptionItem[]
+  accountTransactionRags        AccountTransactionRag[]
+  accountMonthlyTransactionRags AccountMonthlyTransactionRag[]
+
+  @@map("users")
+}
+
+model Usage {
+  id String @id @default(uuid())
+
+  aiReceiptScans Int @default(0)
+  aiBulkImports  Int @default(0)
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign Key
+  userId     String      @unique
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  importJobs ImportJob[]
+
+  @@map("usage")
+}
+
+model ImportJob {
+  id        String
+  userId    String
+  accountId String?
+  status    ImportJobStatus @default(SCANNED)
+  createdAt DateTime        @default(now())
+  errorMsg  String?
+
+  usageId String?
+  usage   Usage?  @relation(fields: [usageId], references: [id], onDelete: Cascade)
+
+  @@id([id, userId])
+}
+
+model Subscription {
+  id        String   @id // Clerk subscription.id
+  userId    String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items SubscriptionItem[]
+
+  @@index([userId])
+}
+
+model SubscriptionItem {
+  id             String @id
+  userId         String
+  subscriptionId String
+
+  planKey  String
+  planType PlanType
+  status   SubscriptionStatus // single source of truth
+
+  periodStart DateTime?
+  periodEnd   DateTime?
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, subscriptionId, status])
+}
+
+model Payment {
+  id        String        @id
+  userId    String
+  status    PaymentStatus
+  type      PaymentType
+  amount    Int?
+  createdAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Budget {
+  id            String    @id @default(uuid())
+  amount        Decimal
+  lastAlertSent DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Foreign Key
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("budgets")
+}
+
+model Account {
+  id        String      @id @default(uuid())
+  name      String
+  type      AccountType
+  balance   Decimal     @default(0)
+  isDefault Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Foreign Key
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  transactions                  Transaction[]
+  accountTransactionRags        AccountTransactionRag[]
+  accountMonthlyTransactionRags AccountMonthlyTransactionRag[]
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Transaction {
+  id                String             @id @default(uuid())
+  type              TransactionType
+  amount            Decimal
+  description       String?
+  date              DateTime
+  category          String
+  receiptUrl        String?
+  isRecurring       Boolean            @default(false)
+  recurringInterval RecurringInterval?
+  nextRecurringDate DateTime?
+  lastProcessed     DateTime?
+  status            TransactionStatus  @default(COMPLETED)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // Foreign Keys
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId String
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // ✅ Prevent duplicate transactions
+  @@unique([userId, accountId, date, amount, description])
+  @@map("transactions")
+}
+
+model AccountTransactionRag {
+  id        String @id @default(uuid())
+  userId    String
+  accountId String
+
+  content   String
+  embedding Unsupported("vector(768)") // for gemini text-embedding-004
+
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, accountId])
+  @@index([userId, accountId])
+  @@map("account_transaction_rag")
+}
+
+model AccountMonthlyTransactionRag {
+  id           String   @id @default(uuid())
+  userId       String
+  accountId    String
+  summaryMonth DateTime
+
+  content   String
+  embedding Unsupported("vector(768)") // for gemini text-embedding-004
+
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, accountId, summaryMonth])
+  @@index([userId, accountId, summaryMonth])
+  @@map("account_monthly_transaction_rag")
+}
