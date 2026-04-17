@@ -1,0 +1,14 @@
+import { PlanType } from "@prisma/client";
+import { FEATURES, FeatureKey } from "./features";
+
+export const FEATURE_MIN_PLAN: Record<FeatureKey, PlanType> = {
+  [FEATURES.RECURRING_TRANSACTIONS]: PlanType.PRO,
+  [FEATURES.AI_RECEIPT_SCAN]: PlanType.PRO,
+  [FEATURES.BUDGET_ALERT_EMAILS]: PlanType.PRO,
+  [FEATURES.AI_SEPENDING_INSIGHTS]: PlanType.PRO,
+
+  [FEATURES.MULTIPLE_ACCOUNTS]: PlanType.PREMIUM,
+  [FEATURES.AI_FINANCE_CHATBOT]: PlanType.PREMIUM,
+  [FEATURES.CSV_EXCEL_EXPORT]: PlanType.PREMIUM,
+  [FEATURES.AI_BULK_INSERT]: PlanType.PREMIUM,
+};
