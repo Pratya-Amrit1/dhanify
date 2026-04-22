@@ -1,0 +1,4 @@
+export const MEMORY_CONFIG = {
+  SUMMARIZE_TRIGGER: 30,
+  KEEP_LAST_MESSAGES: 15,
+};
