@@ -21,6 +21,35 @@ import { ImportJobStatus } from "@prisma/client";
 import { requireUser } from "@/lib/data/users/auth";
 import { normalizeAiImportError } from "@/lib/utils/normalizeAiErrors";
 
+// retry helper for transient API errors (503, 500)
+const MAX_RETRIES = 3;
+const INITIAL_DELAY_MS = 1000;
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = MAX_RETRIES,
+): Promise<T> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isRetryable =
+        error instanceof Error &&
+        (error.message.includes("503") || error.message.includes("500"));
+
+      if (!isRetryable || attempt === retries) {
+        throw error;
+      }
+
+      const delay = INITIAL_DELAY_MS * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+
+  // unreachable, but satisfies TypeScript
+  throw new Error("Retry failed");
+}
+
 // ai scan reciept action
 const receiptSchema = z.object({
   amount: z.number().positive(),
@@ -107,15 +136,17 @@ Multiple transactions:
 []
 `;
 
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          mimeType: file.type,
-          data: base64,
+    const result = await withRetry(() =>
+      model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            mimeType: file.type,
+            data: base64,
+          },
         },
-      },
-    ]);
+      ]),
+    );
 
     // ✅ JSON only (no regex needed)
     const text = result.response.text();
@@ -282,15 +313,17 @@ Return ONLY valid JSON.
 }
 `;
 
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          mimeType: file.type,
-          data: base64,
+    const result = await withRetry(() =>
+      model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            mimeType: file.type,
+            data: base64,
+          },
         },
-      },
-    ]);
+      ]),
+    );
 
     // ✅ JSON only
     const parsed = JSON.parse(result.response.text().trim());

@@ -42,3 +42,11 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# scratch files
+error.log
+proxy.ts
+test-ai.js
+test-output.txt
+prisma/check-subscription.ts
+prisma/fix-subscription.ts

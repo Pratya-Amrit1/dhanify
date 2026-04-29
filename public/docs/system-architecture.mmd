@@ -1,0 +1,89 @@
+flowchart LR
+    subgraph Client
+        UI[Next.js + shadcn/ui]
+        AIAgent[Vercel AI Elements]
+    end
+
+    subgraph Edge
+        Clerk[(Clerk Auth & Billing)]
+        Arcjet[(Arcjet Shield)]
+    end
+
+    subgraph App
+        Actions[Server Actions]
+        API[Route Handlers]
+        LangGraph[LangGraph Orchestrator]
+    end
+
+    subgraph Data
+        Prisma[(Prisma ORM)]
+        Neon[(Neon PostgreSQL + pgvector)]
+    end
+
+    subgraph Workers
+        Inngest[(Inngest Cron & Events)]
+        Nodemailer[(Email Alerts)]
+    end
+
+    UI --> Clerk --> Actions
+    AIAgent --> LangGraph --> Prisma
+    Actions --> Prisma --> Neon
+    API --> Arcjet --> Actions
+    Inngest --> Prisma
+    Inngest --> Nodemailer
+    LangGraph --> Inngest
+
+
+%% ---
+%% config:
+%%   theme: default
+%% ---
+%% flowchart LR
+%%  subgraph Client["Client"]
+%%         UI(["Next.js + shadcn/ui"])
+%%         AIAgent["Vercel AI Elements"]
+%%   end
+%%  subgraph Edge["Edge"]
+%%         Clerk[("Clerk Auth & Billing")]
+%%         Arcjet["Arcjet Shield"]
+%%   end
+%%  subgraph App["App"]
+%%         Actions["Server Actions"]
+%%         API["Route Handlers"]
+%%         LangGraph["LangGraph Orchestrator"]
+%%   end
+%%  subgraph Data["Data"]
+%%         Prisma[("Prisma ORM")]
+%%         Neon[("Neon PostgreSQL + pgvector")]
+%%   end
+%%  subgraph Workers["Workers"]
+%%         Inngest[("Inngest Cron & Events")]
+%%         Nodemailer>"Email Alerts"]
+%%   end
+%%     UI --> Clerk
+%%     Clerk --> Actions
+%%     AIAgent --> LangGraph
+%%     LangGraph --> Prisma & Inngest
+%%     Actions --> Prisma
+%%     Prisma --> Neon
+%%     API --> Arcjet
+%%     Arcjet --> Actions
+%%     Inngest --> Prisma & Nodemailer
+
+%%     AIAgent@{ shape: hex}
+%%     Arcjet@{ shape: h-cyl}
+%%     Actions@{ shape: tag-doc}
+%%     style UI stroke:#2962FF,fill:#BBDEFB
+%%     style AIAgent fill:#FFCDD2,stroke:#D50000
+%%     style Clerk fill:#FFE0B2,stroke:#FF6D00
+%%     style Arcjet fill:#E1BEE7,stroke:#AA00FF
+%%     style LangGraph fill:#C8E6C9,stroke:#00C853
+%%     style Prisma fill:#BBDEFB,stroke:#2962FF
+%%     style Neon fill:#C8E6C9,stroke:#00C853
+%%     style Inngest fill:#FFCDD2,stroke:#D50000
+%%     style Nodemailer fill:#FFD600
+%%     style App fill:transparent
+%%     style Workers fill:transparent
+%%     style Data fill:transparent
+%%     style Edge fill:transparent
+%%     style Client fill:transparent

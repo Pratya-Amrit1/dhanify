@@ -16,6 +16,8 @@ export function normalizeAiImportError(error: unknown): string {
 
     // AI errors
     if (msg.includes("429")) return "Too many AI requests — try again later";
+    if (msg.includes("503")) return "AI service temporarily unavailable — please try again in a moment";
+    if (msg.includes("500")) return "AI service error — please try again";
     if (msg.includes("404")) return "AI model unavailable";
     if (msg.includes("413")) return "Uploaded image too large";
 
