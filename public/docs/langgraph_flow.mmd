@@ -1,0 +1,31 @@
+---
+config:
+  theme: neo-dark
+---
+flowchart TB
+    A([⭘ Start]) --> B([💡 Agent Node])
+    B --> C{❓ Type of Question?}
+    C -->|Direct Question| E([🏁 End])
+    C -->|Tool Needed| D([🛠 Tool Node])
+    C -->|RAG / Memory Needed| M([📚 RAG Memory Node])
+    D --> F{🔍 Tool Exists?}
+    F -->|Yes| G([⚡ Run Tool & Return ToolMessage])
+    F -->|No| H([❌ Return Error ToolMessage])
+    G --> B
+    H --> B
+    M --> R{🔍 RAG Tool Exists?}
+    R -->|Yes| S([📖 Fetch from Memory & Return Response])
+    R -->|No| T([❌ Return Error Message])
+    S --> B
+    T --> B
+    B --> E
+    subgraph MemoryFlow["🧠 MemoryGraph"]
+        I([⭘ Start]) --> J([📝 Summarize Node])
+        J --> K([💾 Remember Node])
+        K --> L([🏁 End])
+    end
+    classDef circle fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#ffffff;
+    classDef square fill:#111827,stroke:#10b981,stroke-width:2px,color:#ffffff;
+    class A,E,I,L circle;
+    class B,D,M,G,H,S,T,J,K square;
+
