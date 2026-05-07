@@ -50,3 +50,7 @@ test-ai.js
 test-output.txt
 prisma/check-subscription.ts
 prisma/fix-subscription.ts
+
+# doc images (keep locally, not in git)
+public/docs/*.png
+public/docs/*.svg
