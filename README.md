@@ -4,7 +4,7 @@
 
 AI powered personal finance management platform to track accounts, income, and expenses in one place, with transaction management, automated recurring payments, monthly budgets, spending dashboards, and a personal AI assistant for personalized, real-time insights based on user financial data.
 
-### 🔗 [Live demo: dhanify.app](https://dhanify.app)
+### 🔗 [Live demo: dhanify.app](https://dhanify-t1p8.vercel.app/)
 
 <h2 align="center">Tech Stack Used</h2>
 </div>
