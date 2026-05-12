@@ -16,8 +16,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dhanify",
-  description: "Personal finance made simple",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://dhanify-t1p8.vercel.app"
+  ),
+  title: {
+    default: "Dhanify - Personal Finance Made Simple",
+    template: "%s | Dhanify",
+  },
+  description:
+    "Dhanify is your ultimate AI-powered personal finance assistant. Track expenses, manage budgets, and gain insights into your financial health effortlessly.",
+  keywords: [
+    "personal finance",
+    "expense tracker",
+    "budgeting app",
+    "finance assistant",
+    "money management",
+    "wealth tracker",
+  ],
+  authors: [{ name: "Dhanify Team" }],
+  creator: "Dhanify",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    title: "Dhanify - Personal Finance Made Simple",
+    description:
+      "Take control of your finances with Dhanify's AI-powered insights, budget tracking, and smart financial management tools.",
+    siteName: "Dhanify",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dhanify - Personal Finance Made Simple",
+    description:
+      "Take control of your finances with Dhanify's AI-powered insights, budget tracking, and smart financial management tools.",
+  },
 };
 
 export default function RootLayout({
