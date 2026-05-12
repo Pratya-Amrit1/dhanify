@@ -50,6 +50,9 @@ export const metadata: Metadata = {
     description:
       "Take control of your finances with Dhanify's AI-powered insights, budget tracking, and smart financial management tools.",
   },
+  verification: {
+    google: "oV18YApn_X1uwLqMR7nOic9o617Gka7c1EfmlCPZJEs",
+  },
 };
 
 export default function RootLayout({
