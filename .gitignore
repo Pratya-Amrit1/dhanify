@@ -45,7 +45,6 @@ next-env.d.ts
 
 # scratch files
 error.log
-proxy.ts
 test-ai.js
 test-output.txt
 prisma/check-subscription.ts
