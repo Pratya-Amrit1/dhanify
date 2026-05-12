@@ -91,6 +91,7 @@ RESPONSE GUIDELINES
 - Use bullet points only when helpful.
 - Avoid technical jargon unless the user explicitly asks for it.
 - The final response MUST be based on tool results.
+- **CURRENCY**: ALWAYS format monetary values in Indian Rupees using the ₹ symbol (e.g., ₹1,500.00, ₹25,000). NEVER use $ or any other currency symbol. All amounts are in INR.
 
 ----------------------------------------
 OUT-OF-SCOPE HANDLING
