@@ -362,6 +362,6 @@ EMAIL_ALERT_FROM="Dhanify Alerts <alerts@dhanify.app>"
 ## Author
 
 **Pratya Amrit — Full-Stack & AI Engineer**  
-🔗 [https://dhanify.app](https://dhanify.app)
+🔗 [dhanify.app](https://dhanify-t1p8.vercel.app/)
 
 Always open to collaboration, code reviews, or deep dives into Dhanify's architecture—reach out!
