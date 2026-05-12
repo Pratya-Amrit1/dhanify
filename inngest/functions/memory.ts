@@ -8,8 +8,8 @@ export const storeUserMemory = inngest.createFunction(
     id: "store-user-memory",
     name: "Store User Memory",
     retries: 5,
+    triggers: [{ event: "dhanify/memory.store" }],
   },
-  { event: "dhanify/memory.store" },
   async ({ event }) => {
     const { userId, messages } = event.data as {
       userId?: string;

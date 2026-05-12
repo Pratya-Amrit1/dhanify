@@ -12,9 +12,7 @@ export const refreshAccountTransactionRag = inngest.createFunction(
   {
     id: "refresh-account-transaction-rag",
     name: "Refresh Account Transaction Summaries",
-  },
-  {
-    cron: "0 2 * * *", // daily at 2am
+    triggers: [{ cron: "0 2 * * *" }], // daily at 2am
   },
   async ({ step }) => {
     const windowCutoff = new Date(Date.now() - WINDOW_MS);

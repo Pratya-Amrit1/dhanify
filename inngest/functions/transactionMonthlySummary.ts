@@ -44,9 +44,7 @@ export const refreshAccountMonthlySummaryFromEvent = inngest.createFunction(
     id: "refresh-account-monthly-summary-from-event",
     name: "Refresh Account Monthly Summary From Transaction Event",
     retries: 3,
-  },
-  {
-    event: "transaction.changed",
+    triggers: [{ event: "transaction.changed" }],
   },
   async ({ event, step }) => {
     const data = (event.data ?? {}) as TransactionChangeEventData;
