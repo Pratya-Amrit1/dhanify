@@ -5,8 +5,8 @@ import { ErrorCode } from "../../constants/error-codes";
 
 /* ---------- USER ---------- */
 export const requireUser = async () => {
-  const { userId, isAuthenticated } = await auth();
-  if (!isAuthenticated || !userId) {
+  const { userId } = await auth();
+  if (!userId) {
     throw new Error(ErrorCode.UNAUTHORIZED);
   }
 
